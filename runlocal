@@ -1,0 +1,3 @@
+export configFileName=conf/app.cfg
+export checksumEnabled=false
+go run application/main.go
