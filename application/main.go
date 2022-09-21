@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+
+	integration "github.com/jearcila/hex-architecture/application/integration"
 )
 
 func main() {
-	fmt.Println("Hola mundo")
+	if err := integration.Run(); err != nil {
+		fmt.Println(err)
+	}
 }

@@ -2,17 +2,20 @@ package integration
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mercadolibre/fury_g2-i-genova/src/api/operation"
-	"github.com/mercadolibre/fury_g2-i-genova/src/api/util/appcfg"
-	"github.com/mercadolibre/fury_g2-i-genova/src/api/util/genova"
+	appcfg "github.com/jearcila/hex-architecture/application/appcfg"
+	enviroment "github.com/jearcila/hex-architecture/application/enviroments"
+	genova "github.com/jearcila/hex-architecture/infraestructure/driven-adapters/services"
+	apirest "github.com/jearcila/hex-architecture/infraestructure/entry-points/api-rest"
 	"github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/integrations"
 	transactions_constants "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/constants"
 	"github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/utils/furyconfig"
 	"github.com/mercadolibre/fury_go-core/pkg/log"
 	"github.com/mercadolibre/fury_go-core/pkg/telemetry"
 	"github.com/mercadolibre/fury_go-core/pkg/telemetry/tracing"
+	"github.com/mercadolibre/fury_go-core/pkg/transport/httpclient"
 	"github.com/mercadolibre/fury_go-platform/pkg/fury"
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -50,24 +53,25 @@ func Run() error {
 	}
 
 	// Set this value to get the correct environment name
-	app.Scope.Environment = GetEnv(app.Scope.Environment)
+	app.Scope.Environment = enviroment.GetEnv(app.Scope.Environment)
 
 	// Init genova service
-	genovaService, err := genova.NewService(genova.Environment(app.Scope.Environment))
+	genovaService, err := NewService(enviroment.Environment(app.Scope.Environment))
 	if err != nil {
 		return fmt.Errorf("error creating genova service: %w", err)
 	}
-
+	// Crear instancia del servicio rest
+	api := apirest.CreateInstance()
 	// register telemetry middleware
 	telemetryMiddleware := func(engine *gin.Engine) {
 		engine.Use(telemetryMiddleware(app.Tracer, app.Logger))
 	}
 
 	// Register Integration operations
-	integration.OnlineOperation(regularAuthorization, integrations.OnlineOperationHandler(operation.Authorization(&genovaService)))
-	integration.OnlineOperation(regularCapture, integrations.OnlineOperationHandler(operation.Capture(&genovaService)))
-	integration.OnlineOperation(regularRefund, integrations.OnlineOperationHandler(operation.Refund(&genovaService)))
-	integration.OnlineOperation(regularPurchase, integrations.OnlineOperationHandler(operation.Purchase(&genovaService)))
+	integration.OnlineOperation(regularAuthorization, integrations.OnlineOperationHandler(api.AuthorizationRest(&genovaService)))
+	integration.OnlineOperation(regularCapture, integrations.OnlineOperationHandler(api.CaptureRest(&genovaService)))
+	integration.OnlineOperation(regularRefund, integrations.OnlineOperationHandler(api.PurchaseRest(&genovaService)))
+	integration.OnlineOperation(regularPurchase, integrations.OnlineOperationHandler(api.RefundRest(&genovaService)))
 
 	integration.Deploy(telemetryMiddleware)
 	return nil
@@ -87,7 +91,7 @@ func SetupIntegration() *integrations.Integration {
 		integrations.WithMandatoryFuryConfigs(mandatoryConfigs),
 		integrations.WithSupportedCurrencies([]string{"BRL", "ARS", "MXN", "CLP"}),
 		integrations.WithoutValidation(integrations.INTEGRATION_NAME_MUST_MATCH_TRANSACTION_PROVIDER_ID),
-		integrations.WithCapabilities(operation.GetCapabilities()),
+		integrations.WithCapabilities(GetCapabilities()),
 	)
 
 	if integrationError != nil {
@@ -137,4 +141,16 @@ func telemetryMiddleware(tracer telemetry.Client, logger log.Logger) gin.Handler
 		c.Request = c.Request.WithContext(ctx)
 		c.Next()
 	}
+}
+
+func NewService(env enviroment.Environment) (genova.Client, error) {
+	requester := httpclient.New(httpclient.WithTimeout(240 * time.Second))
+	service, err := genova.NewService(env, requester)
+	if err != nil {
+		return genova.Client{}, err
+	}
+
+	return genova.Client{
+		Service: service,
+	}, nil
 }
