@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	model "github.com/jearcila/hex-architecture/domain/model"
+	model "github.com/jearcila/hex-architecture/core/model"
 
 	transactions_context "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/context"
 	"github.com/mercadolibre/fury_go-core/pkg/telemetry/tracing"

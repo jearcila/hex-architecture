@@ -1,8 +1,8 @@
 package apirest
 
 import (
-	"github.com/jearcila/hex-architecture/domain/ports"
-	useCase "github.com/jearcila/hex-architecture/domain/useCase"
+	"github.com/jearcila/hex-architecture/core/ports"
+	useCase "github.com/jearcila/hex-architecture/core/useCase"
 )
 
 // Init genova service

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/jearcila/hex-architecture/domain/constants/status"
-	gErrors "github.com/jearcila/hex-architecture/domain/model/errors"
-	utils "github.com/jearcila/hex-architecture/domain/utils"
+	"github.com/jearcila/hex-architecture/core/constants/status"
+	gErrors "github.com/jearcila/hex-architecture/core/model/errors"
+	utils "github.com/jearcila/hex-architecture/core/utils"
 	transactions_context "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/context"
 	transactions_factory "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/factory"
 	transactions_models "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/models"

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jearcila/hex-architecture/domain/constants/status"
-	"github.com/jearcila/hex-architecture/domain/utils/format"
-	"github.com/jearcila/hex-architecture/domain/utils/log"
-	"github.com/jearcila/hex-architecture/domain/utils/metrics"
+	"github.com/jearcila/hex-architecture/core/constants/status"
+	"github.com/jearcila/hex-architecture/core/utils/format"
+	"github.com/jearcila/hex-architecture/core/utils/log"
+	"github.com/jearcila/hex-architecture/core/utils/metrics"
 
 	transactions_context "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/context"
 	transactions_factory "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/factory"

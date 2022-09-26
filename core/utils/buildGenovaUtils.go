@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/jearcila/hex-architecture/application/appcfg"
-	"github.com/jearcila/hex-architecture/domain/constants"
-	"github.com/jearcila/hex-architecture/domain/model"
-	"github.com/jearcila/hex-architecture/domain/utils/format"
+	"github.com/jearcila/hex-architecture/core/constants"
+	"github.com/jearcila/hex-architecture/core/model"
+	"github.com/jearcila/hex-architecture/core/utils/format"
 	transactions_context "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/context"
 	transactions_models "github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/transactions/models"
 	"github.com/mercadolibre/fury_gateway-kit/pkg/g2/framework/utils/currencies"
